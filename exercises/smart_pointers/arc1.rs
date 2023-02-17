@@ -12,13 +12,10 @@
 // Because we are using threads, our values need to be thread-safe.  Therefore,
 // we are using Arc.  We need to make a change in each of the two TODOs.
 
-
 // Make this code compile by filling in a value for `shared_numbers` where the
 // first TODO comment is, and create an initial binding for `child_numbers`
 // where the second TODO comment is. Try not to create any copies of the `numbers` Vec!
 // Execute `rustlings hint arc1` or use the `hint` watch subcommand for a hint.
-
-// I AM NOT DONE
 
 #![forbid(unused_imports)] // Do not change this, (or the next) line.
 use std::sync::Arc;
@@ -26,12 +23,37 @@ use std::thread;
 
 fn main() {
     let numbers: Vec<_> = (0..100u32).collect();
-    let shared_numbers = // TODO
+    let shared_numbers = Arc::new(numbers); // TODO
     let mut joinhandles = Vec::new();
 
     for offset in 0..8 {
-        let child_numbers = // TODO
+        let child_numbers = Arc::clone(&shared_numbers); // TODO
         joinhandles.push(thread::spawn(move || {
+            // Because the closure passed to filter() takes a reference, and many iterators iterate over references, this leads to a possibly confusing situation, where the type of the closure is a double reference:
+
+            // let a = [0, 1, 2];
+
+            // let mut iter = a.iter().filter(|x| **x > 1); // need two *s!
+
+            // assert_eq!(iter.next(), Some(&2));
+            // assert_eq!(iter.next(), None);
+            // It's common to instead use destructuring on the argument to strip away one:
+
+            // let a = [0, 1, 2];
+
+            // let mut iter = a.iter().filter(|&x| *x > 1); // both & and *
+
+            // assert_eq!(iter.next(), Some(&2));
+            // assert_eq!(iter.next(), None);
+            // or both:
+
+            // let a = [0, 1, 2];
+
+            // let mut iter = a.iter().filter(|&&x| x > 1); // two &s
+
+            // assert_eq!(iter.next(), Some(&2));
+            // assert_eq!(iter.next(), None);
+
             let sum: u32 = child_numbers.iter().filter(|n| *n % 8 == offset).sum();
             println!("Sum of offset {} is {}", offset, sum);
         }));
@@ -39,4 +61,6 @@ fn main() {
     for handle in joinhandles.into_iter() {
         handle.join().unwrap();
     }
+
+    let t = String::from("value");
 }

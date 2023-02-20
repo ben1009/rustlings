@@ -15,6 +15,7 @@ fn char_counter<T: AsRef<str>>(arg: T) -> usize {
     arg.as_ref().chars().count()
 }
 
+// https://github.com/rust-lang/rustlings/pull/1113
 // Squares a number using as_mut().
 // TODO: Add the appropriate trait bound.
 fn num_sq<T, U>(arg: &mut T)

@@ -39,10 +39,15 @@ impl From<&str> for Person {
     fn from(s: &str) -> Person {
         fn paser_person(s: &str) -> Option<Person> {
             let (name, age) = s.split_once(",")?;
+            // https://stackoverflow.com/questions/43335193/why-does-an-if-without-an-else-always-result-in-as-the-value
+            // https://users.rust-lang.org/t/why-if-without-else-is-a-type-mismatch-error/10236/2
+            // rustc --explain E0317
+            // if name.trim() == "" {
+            //      Some(Person::default())
+            // }
             if name.trim() == "" {
                 return Some(Person::default());
             }
-
             let age = age.parse::<usize>().ok()?;
             Some(Person {
                 name: name.into(),
